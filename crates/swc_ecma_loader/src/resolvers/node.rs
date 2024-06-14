@@ -373,13 +373,32 @@ impl NodeModulesResolver {
         };
 
         if let Some(Some(target)) = main_fields.iter().find(|x| x.is_some()) {
-            let path = pkg_dir.join(target);
+            let path = self.dist_substitute(pkg_dir, &PathBuf::from(target));
+            debug!("!!! Resolving {}", path.display());
             return self
                 .resolve_as_file(&path)
                 .or_else(|_| self.resolve_as_directory(&path, false));
         }
 
         Ok(None)
+    }
+
+    /// Substitute dist/ or out/ (compiled) directories for src/ (source)
+    /// directories.
+    fn dist_substitute(&self, pkg_dir: &Path, mut target: &Path) -> PathBuf {
+        let substs = ["dist", "out"];
+
+        for sub in substs {
+            target = target.strip_prefix(".").unwrap_or(target);
+            if target.strip_prefix(sub).is_ok() {
+                let path = pkg_dir.join("src");
+                if path.is_dir() {
+                    return path.join("index");
+                }
+            }
+        }
+
+        pkg_dir.join(target)
     }
 
     /// Resolve by walking up node_modules folders.
