@@ -34,7 +34,7 @@ path-clean  = { version = "=0.1.0", optional = true }
 pathdiff    = { workspace = true }
 serde       = { workspace = true, features = ["derive"] }
 serde_json  = { workspace = true, optional = true }
-tracing     = { workspace = true, features = ["log-always"] }
+tracing     = { workspace = true }
 
 swc_atoms  = { version = "0.6.5", path = "../swc_atoms" }
 swc_cached = { version = "0.3.19", optional = true, path = "../swc_cached" }
